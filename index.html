@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyTalks Ultimate - Value Investing Platform</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">💰 MoneyTalks Ultimate</h1>
+            <p class="tagline">Warren Buffett Philosophy + Graham Value Investing</p>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <section class="search-section">
+        <div class="container">
+            <div class="search-box">
+                <input type="text" id="stockSearch" placeholder="Enter ticker symbol (e.g., GRMN, AAPL, COST)..." autocomplete="off">
+                <button id="searchBtn" class="btn-primary">Search</button>
+            </div>
+            <div id="searchSuggestions" class="suggestions"></div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Stock Header (shown after search) -->
+            <div id="stockHeader" class="stock-header hidden">
+                <div class="stock-info">
+                    <h2 id="stockName"></h2>
+                    <div class="price-info">
+                        <span id="stockPrice" class="price"></span>
+                        <span id="priceChange" class="change"></span>
+                        <span id="priceChangePercent" class="change-percent"></span>
+                    </div>
+                    <div class="market-stats">
+                        <span id="volume"></span>
+                        <span id="marketCap"></span>
+                        <span id="marketStatus"></span>
+                    </div>
+                    <div class="range-info">
+                        <span id="dayRange"></span>
+                        <span id="yearRange"></span>
+                    </div>
+                    <button id="addToWatchlistBtn" class="btn-secondary">+ Add to Watchlist</button>
+                </div>
+                <div class="moneytalk-score-card" id="scoreCard">
+                    <h3>MoneyTalks Score</h3>
+                    <div class="score-display">
+                        <span id="totalScore" class="score-number">--</span>
+                        <span id="scoreVerdict" class="score-verdict">--</span>
+                    </div>
+                    <div class="score-breakdown" id="scoreBreakdown"></div>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <nav id="tabNav" class="tab-nav hidden">
+                <button class="tab-btn active" data-tab="overview">Overview</button>
+                <button class="tab-btn" data-tab="financials">Financials</button>
+                <button class="tab-btn" data-tab="roic">ROIC Analysis</button>
+                <button class="tab-btn" data-tab="dcf">DCF Valuation</button>
+                <button class="tab-btn" data-tab="competitors">Competitors</button>
+                <button class="tab-btn" data-tab="moat">Moat Analysis</button>
+                <button class="tab-btn" data-tab="redflags">Red Flags</button>
+                <button class="tab-btn" data-tab="media">Media & Sentiment</button>
+                <button class="tab-btn" data-tab="watchlist">My Watchlist</button>
+                <button class="tab-btn" data-tab="portfolio">Portfolio</button>
+                <button class="tab-btn" data-tab="hot">Hot Stocks</button>
+            </nav>
+
+            <!-- Tab Content -->
+            <div id="tabContent" class="tab-content hidden">
+
+                <!-- Overview Tab -->
+                <div id="overview" class="tab-pane active">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h4>P/E Ratio</h4>
+                            <span id="peRatio" class="metric-value">--</span>
+                        </div>
+                        <div class="metric-card">
+                            <h4>ROIC</h4>
+                            <span id="roicValue" class="metric-value">--</span>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Margin of Safety</h4>
+                            <span id="mosValue" class="metric-value">--</span>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Operating Margin</h4>
+                            <span id="opMargin" class="metric-value">--</span>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Debt/Equity</h4>
+                            <span id="debtEquity" class="metric-value">--</span>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Free Cash Flow</h4>
+                            <span id="fcf" class="metric-value">--</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <h3>5-Year Revenue & Net Income</h3>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+
+                    <div class="investment-verdict">
+                        <h3>Investment Verdict</h3>
+                        <div id="verdictContent"></div>
+                    </div>
+                </div>
+
+                <!-- Financials Tab -->
+                <div id="financials" class="tab-pane">
+                    <div class="financials-selector">
+                        <button class="fin-btn active" data-statement="income">Income Statement</button>
+                        <button class="fin-btn" data-statement="balance">Balance Sheet</button>
+                        <button class="fin-btn" data-statement="cashflow">Cash Flow</button>
+                    </div>
+                    <div id="financialTables"></div>
+                    <div class="chart-container">
+                        <h3>Margin Trends</h3>
+                        <canvas id="marginChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- ROIC Analysis Tab -->
+                <div id="roic" class="tab-pane">
+                    <div class="roic-dashboard">
+                        <h3>Return on Invested Capital Analysis</h3>
+                        <div class="roic-formula">
+                            <p><strong>Formula:</strong> ROIC = NOPAT / Invested Capital</p>
+                            <p><strong>NOPAT:</strong> Net Operating Profit After Tax = Operating Income × (1 - Tax Rate)</p>
+                            <p><strong>Invested Capital:</strong> Equity + Net Debt</p>
+                        </div>
+                        <div id="roicTrend"></div>
+                        <div class="chart-container">
+                            <canvas id="roicChart"></canvas>
+                        </div>
+                        <div class="roic-interpretation">
+                            <h4>Interpretation</h4>
+                            <div id="roicInterpretation"></div>
+                        </div>
+                        <div class="educational-note">
+                            <h4>📚 Buffett-Graham Principle</h4>
+                            <p><strong>Rule: ROIC > 15% indicates quality business</strong></p>
+                            <p>High ROIC suggests sustainable competitive advantage. Consistent performance across 5+ years shows durable moat. Companies that generate high returns on capital compound wealth more effectively than those requiring constant reinvestment.</p>
+                            <p><em>📖 See Lesson 9: "Capital Allocation Quality"</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DCF Valuation Tab -->
+                <div id="dcf" class="tab-pane">
+                    <div class="dcf-dashboard">
+                        <h3>Discounted Cash Flow Valuation Model</h3>
+                        <div class="dcf-assumptions">
+                            <h4>Assumptions (Adjust Sliders)</h4>
+                            <div class="assumption-row">
+                                <label>Revenue Growth (Years 1-5): <span id="revenueGrowthValue">8%</span></label>
+                                <input type="range" id="revenueGrowth" min="0" max="30" value="8" step="0.5">
+                            </div>
+                            <div class="assumption-row">
+                                <label>Terminal Growth Rate: <span id="terminalGrowthValue">2.5%</span></label>
+                                <input type="range" id="terminalGrowth" min="0" max="5" value="2.5" step="0.1">
+                            </div>
+                            <div class="assumption-row">
+                                <label>Operating Margin: <span id="opMarginValue">25%</span></label>
+                                <input type="range" id="operatingMargin" min="5" max="50" value="25" step="1">
+                            </div>
+                            <div class="assumption-row">
+                                <label>Discount Rate (WACC): <span id="discountRateValue">10%</span></label>
+                                <input type="range" id="discountRate" min="5" max="20" value="10" step="0.5">
+                            </div>
+                            <div class="assumption-row">
+                                <label>Tax Rate: <span id="taxRateValue">21%</span></label>
+                                <input type="range" id="taxRate" min="0" max="40" value="21" step="1">
+                            </div>
+                            <div class="assumption-row">
+                                <label>CapEx % of Revenue: <span id="capexValue">3%</span></label>
+                                <input type="range" id="capexPercent" min="0" max="15" value="3" step="0.5">
+                            </div>
+                        </div>
+
+                        <div class="dcf-results">
+                            <h4>Valuation Results</h4>
+                            <div id="dcfCalculation"></div>
+                        </div>
+
+                        <div class="sensitivity-analysis">
+                            <h4>Sensitivity Analysis</h4>
+                            <div id="sensitivityTable"></div>
+                        </div>
+
+                        <div class="educational-note">
+                            <h4>📚 Buffett-Graham Principle</h4>
+                            <p><strong>Conservative Assumptions Required</strong></p>
+                            <p>Revenue growth should be capped at historical average (avoid Wall Street optimism). Terminal growth never exceeds GDP rate (2-3%). Discount rate appropriate to business risk (9-10% for stable businesses, 12%+ for cyclical).</p>
+                            <p><em>📖 See Lesson 7: "DCF Valuation"</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Competitors Tab -->
+                <div id="competitors" class="tab-pane">
+                    <h3>Competitor Comparison</h3>
+                    <div id="competitorTable"></div>
+                    <div class="chart-container">
+                        <h3>ROIC Comparison</h3>
+                        <canvas id="competitorChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Valuation vs Quality Matrix</h3>
+                        <canvas id="valuationMatrix"></canvas>
+                    </div>
+                </div>
+
+                <!-- Moat Analysis Tab -->
+                <div id="moat" class="tab-pane">
+                    <h3>Competitive Moat Analysis</h3>
+                    <div class="moat-types">
+                        <div class="moat-card">
+                            <h4>🌐 Network Effect</h4>
+                            <div id="networkEffect"></div>
+                        </div>
+                        <div class="moat-card">
+                            <h4>🔒 Switching Costs</h4>
+                            <div id="switchingCosts"></div>
+                        </div>
+                        <div class="moat-card">
+                            <h4>💰 Cost Advantage</h4>
+                            <div id="costAdvantage"></div>
+                        </div>
+                        <div class="moat-card">
+                            <h4>🏆 Brand & Intangibles</h4>
+                            <div id="brandPower"></div>
+                        </div>
+                        <div class="moat-card">
+                            <h4>📏 Efficient Scale</h4>
+                            <div id="efficientScale"></div>
+                        </div>
+                    </div>
+                    <div class="moat-verdict">
+                        <h4>Overall Moat Strength</h4>
+                        <div id="moatScore"></div>
+                    </div>
+                </div>
+
+                <!-- Red Flags Tab -->
+                <div id="redflags" class="tab-pane">
+                    <h3>Red Flag Detection Report</h3>
+                    <div id="redFlagReport"></div>
+                    <div class="educational-note">
+                        <h4>📚 What to Watch For</h4>
+                        <p><strong>Inventory Bloat:</strong> Inventory growing faster than revenue signals weakening demand</p>
+                        <p><strong>SBC Dilution:</strong> Excessive stock-based compensation (>10% revenue) transfers value from shareholders to employees</p>
+                        <p><strong>Margin Compression:</strong> Growing revenue but shrinking margins indicates competitive pressure</p>
+                    </div>
+                </div>
+
+                <!-- Media & Sentiment Tab -->
+                <div id="media" class="tab-pane">
+                    <h3>Media & Sentiment Analysis</h3>
+                    <div class="sentiment-overview">
+                        <h4>Overall Sentiment: <span id="overallSentiment"></span></h4>
+                    </div>
+                    <div id="newsFeeds"></div>
+                    <div id="socialSentiment"></div>
+                    <div id="analystRatings"></div>
+                </div>
+
+                <!-- Watchlist Tab -->
+                <div id="watchlist" class="tab-pane">
+                    <h3>My Investment Watchlist</h3>
+                    <div id="watchlistTable"></div>
+                    <div class="watchlist-metrics">
+                        <h4>Portfolio Metrics</h4>
+                        <div id="watchlistMetrics"></div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Tab -->
+                <div id="portfolio" class="tab-pane">
+                    <h3>Portfolio Dashboard</h3>
+                    <div class="portfolio-summary">
+                        <div id="portfolioValue"></div>
+                        <div id="portfolioAllocation"></div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                    <div id="portfolioHoldings"></div>
+                </div>
+
+                <!-- Hot Stocks Tab -->
+                <div id="hot" class="tab-pane">
+                    <h3>🔥 Trending Stocks (Real-Time)</h3>
+                    <div id="hotStocksList"></div>
+                </div>
+
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="spinner hidden">
+                <div class="spinner-icon"></div>
+                <p>Analyzing stock data...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message hidden"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>MoneyTalks Ultimate - Warren Buffett Philosophy + Benjamin Graham Value Investing</p>
+            <p class="disclaimer">Disclaimer: This platform is for educational purposes only. Not financial advice. Always do your own research.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/calculations.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
